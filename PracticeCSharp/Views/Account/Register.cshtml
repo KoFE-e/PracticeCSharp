@@ -1,0 +1,47 @@
+﻿@model PracticeCSharp.Domain.ViewModels.Account.RegisterViewModel
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Регистрация";
+}
+
+<div style="padding: 20px;"></div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <span class="anchor"></span>
+                    <div class="card card-account card-outline-secondary border border-white">
+                        <div class="card-header">
+                            <h3 class="mb-0 text-center paragraphHome text-black">Регистрация</h3>
+                        </div>
+                        <div class="card-body">
+                            <form asp-controller="Account" asp-action="Register">
+                                <div class="form-group">
+                                    <input asp-for="Name" class="form-control textbox-dg font-weight-bold text-center" placeholder="Имя" type="text">
+                                    <span class="text-danger" asp-validation-for="@Model.Name"></span>
+                                    <div class="form-text">Длина логина должна быть от 3 до 20 символов.</div>
+                                </div>
+                                <div class="form-group">
+                                    <input autocomplete="new-password" asp-for="Password" placeholder="Пароль" class="form-control textbox-dg font-weight-bold text-center" type="password">
+                                    <span class="text-danger" asp-validation-for="@Model.Password"></span>
+                                    <span class="form-text">Пароль должен быть длиной больше 4 символов и содержать только латинские символы и цифры</span>
+                                </div>                                
+                                <div class="form-group">
+                                    <input autocomplete="new-password" asp-for="PasswordConfirm" placeholder="Подтвердите пароль" class="form-control textbox-dg font-weight-bold text-center" type="password">
+                                    <span class="text-danger" asp-validation-for="@Model.PasswordConfirm"></span>
+                                </div>
+                                <div>
+                                    <h2 class="paragraphHome text-center"><a asp-controller="Account" target="_blank" asp-action="Login" style="color:deepskyblue;">Вход</a></h2>
+                                </div>
+                                <button class="btn btn-success btn-lg float-right" type="submit">Отправить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
