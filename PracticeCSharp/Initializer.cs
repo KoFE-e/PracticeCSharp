@@ -19,6 +19,8 @@ namespace PracticeCSharp
             services.AddScoped<IBaseRepository<Car>, CarRepository>();
             services.AddScoped<IBaseRepository<User>, UserRepository>();
             services.AddScoped<IBaseRepository<Profile>, ProfileRepository>();
+            services.AddScoped<IBaseRepository<Order>, OrderRepository>();
+            services.AddScoped<IBaseRepository<Basket>, BasketRepository>();
         }
 
         public static void InitializeServices (this IServiceCollection services)
@@ -27,6 +29,8 @@ namespace PracticeCSharp
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IBasketService, BasketService>();
         }
     }
 }

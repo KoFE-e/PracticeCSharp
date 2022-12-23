@@ -10,6 +10,9 @@ namespace PracticeCSharp.Service.Interfaces
     {
         Task<IBaseResponse<User>> Create(UserViewModel model);
 
+        Task<IBaseResponse<User>> Edit(long id, UserViewModel model);
+
+        Task<IBaseResponse<UserViewModel>> GetUser(long id);
         BaseResponse<Dictionary<int, string>> GetRoles();
 
         Task<BaseResponse<IEnumerable<UserViewModel>>> GetUsers();

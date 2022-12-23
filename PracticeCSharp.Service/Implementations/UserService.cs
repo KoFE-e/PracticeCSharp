@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Automarket.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PracticeCSharp.DAL.Interfaces;
+using PracticeCSharp.DAL.Repositories;
 using PracticeCSharp.Domain.Entity;
 using PracticeCSharp.Domain.Enum;
 using PracticeCSharp.Domain.Extensions;
 using PracticeCSharp.Domain.Helpers;
 using PracticeCSharp.Domain.Response;
+using PracticeCSharp.Domain.ViewModels.Car;
 using PracticeCSharp.Domain.ViewModels.User;
 using PracticeCSharp.Service.Interfaces;
 
@@ -72,6 +75,83 @@ namespace PracticeCSharp.Service.Implementations
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"Внутренняя ошибка: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<IBaseResponse<User>> Edit(long id, UserViewModel model)
+        {
+            try
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+                if (user == null)
+                {
+                    return new BaseResponse<User>()
+                    {
+                        Description = "Пользователь не найден",
+                        StatusCode = StatusCode.UserNotFound
+                    };
+                }
+
+                user.Name = model.Name;
+                user.Password = HashPasswordHelper.HashPassword(model.Password);
+                user.Role = (Role)Convert.ToInt32(model.Role);
+
+
+                await _userRepository.Update(user);
+
+
+                return new BaseResponse<User>()
+                {
+                    Description = "Данные изменены",
+                    StatusCode = StatusCode.OK
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<User>()
+                {
+                    Description = $"[EditUser] : {ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<IBaseResponse<UserViewModel>> GetUser(long id)
+        {
+            try
+            {
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+                if (user == null)
+                {
+                    return new BaseResponse<UserViewModel>()
+                    {
+                        Description = "Пользователь не найден",
+                        StatusCode = StatusCode.UserNotFound
+                    };
+                }
+
+                var data = new UserViewModel()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Password = user.Password,
+                    Role = user.Role.GetDisplayName()
+                };
+
+                return new BaseResponse<UserViewModel>()
+                {
+                    StatusCode = StatusCode.OK,
+                    Data = data
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<UserViewModel>()
+                {
+                    Description = $"[GetUser] : {ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
                 };
             }
         }
@@ -157,6 +237,17 @@ namespace PracticeCSharp.Service.Implementations
                     Description = $"Внутренняя ошибка: {ex.Message}"
                 };
             }
+        }
+
+        private ClaimsIdentity Authentificate(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
+            };
+            return new ClaimsIdentity(claims, "ApplicationCookie",
+                ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
         }
     }
 }

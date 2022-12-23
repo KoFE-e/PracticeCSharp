@@ -6,11 +6,12 @@
 <form id="formSaveCar" asp-controller="Car" asp-action="Save" method="post" enctype="multipart/form-data">
     <input asp-for="@Model.Id" disabled style="display:none" />
     <div class="row">
-        <div class="col-md-12">
-            <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model?.Image ?? Array.Empty<byte>())" class="card-img-top card-image" alt="@Model.Name">
-            <input asp-for="@Model.Avatar" class="form-control" type="file">
+        <div class="form-group col-md-4">
+            <label asp-for="@Model.Avatar" class="col-form-label"></label>
+            <input asp-for="@Model.Avatar" accept="image/*">
         </div>
     </div>
+    
     <div class="row">
         <div class="form-group col-md-4">
             <label asp-for="@Model.Name" class="col-form-label"></label>

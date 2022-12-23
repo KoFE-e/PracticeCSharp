@@ -8,6 +8,7 @@ using PracticeCSharp.Domain.ViewModels.Car;
 using PracticeCSharp.Service.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace PracticeCSharp.Service.Implementations
             _carRepository = carRepository;
         }
 
-        public async Task<IBaseResponse<CarViewModel>> GetCar(int id)
+        public async Task<IBaseResponse<CarViewModel>> GetCar(long id)
         {
             try
             {
@@ -66,9 +67,9 @@ namespace PracticeCSharp.Service.Implementations
             }
         }
 
-        public async Task<BaseResponse<Dictionary<int, string>>> GetCar(string term)
+        public async Task<BaseResponse<Dictionary<long, string>>> GetCar(string term)
         {
-            var baseResponse = new BaseResponse<Dictionary<int, string>>();
+            var baseResponse = new BaseResponse<Dictionary<long, string>>();
             try
             {
                 var cars = await _carRepository.GetAll()
@@ -92,7 +93,7 @@ namespace PracticeCSharp.Service.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponse<Dictionary<int, string>>()
+                return new BaseResponse<Dictionary<long, string>>()
                 {
                     Description = ex.Message,
                     StatusCode = StatusCode.InternalServerError
@@ -100,20 +101,20 @@ namespace PracticeCSharp.Service.Implementations
             }
         }
 
-        public async Task<IBaseResponse<Car>> Create(CarViewModel carViewModel, byte[] imageData)
+        public async Task<IBaseResponse<Car>> Create(CarViewModel carViewModel)
         {
             try
             {
                 var car = new Car()
                 {
                     Description = carViewModel.Description,
-                    DateCreate = DateTime.Now,
+                    DateCreate = DateTime.Parse(carViewModel.DateCreate),
                     Speed = carViewModel.Speed,
                     Model = carViewModel.Model,
                     Price = carViewModel.Price,
                     Name = carViewModel.Name,
                     TypeCar = (TypeCar)Convert.ToInt32(carViewModel.TypeCar),
-                    Avatar = imageData
+                    Avatar = carViewModel.Image
                 };
 
                 await _carRepository.Create(car);
@@ -134,7 +135,7 @@ namespace PracticeCSharp.Service.Implementations
             }
         }
 
-        public async Task<IBaseResponse<bool>> DeleteCar(int id)
+        public async Task<IBaseResponse<bool>> DeleteCar(long id)
         {
             try
             {
@@ -199,7 +200,7 @@ namespace PracticeCSharp.Service.Implementations
             }
         }
 
-        public async Task<IBaseResponse<Car>> Edit(int id, CarViewModel model)
+        public async Task<IBaseResponse<Car>> Edit(long id, CarViewModel model)
         {
             var baseResponse = new BaseResponse<Car>();
             try
@@ -237,14 +238,14 @@ namespace PracticeCSharp.Service.Implementations
             }
         }
 
-        public BaseResponse<Dictionary<int, string>> GetTypes()
+        public BaseResponse<Dictionary<long, string>> GetTypes()
         {
             try
             {
                 var types = ((TypeCar[])Enum.GetValues(typeof(TypeCar)))
-                    .ToDictionary(k => (int)k, t => t.GetDisplayName());
+                    .ToDictionary(k => (long)k, t => t.GetDisplayName());
 
-                return new BaseResponse<Dictionary<int, string>>()
+                return new BaseResponse<Dictionary<long, string>>()
                 {
                     Data = types,
                     StatusCode = StatusCode.OK
@@ -252,7 +253,7 @@ namespace PracticeCSharp.Service.Implementations
             }
             catch (Exception ex)
             {
-                return new BaseResponse<Dictionary<int, string>>()
+                return new BaseResponse<Dictionary<long, string>>()
                 {
                     Description = ex.Message,
                     StatusCode = StatusCode.InternalServerError

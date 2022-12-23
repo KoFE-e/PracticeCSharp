@@ -1,0 +1,109 @@
+﻿@model PracticeCSharp.Domain.ViewModels.Order.CreateOrderViewModel
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Оформление";
+}
+
+<div style="padding: 20px;"></div>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card">
+            <form id="orderFormId">
+                <input asp-for="Login" hidden />
+                <input asp-for="CarId" hidden />
+                <h4 class="text-center">Форма создания заказа</h4>
+                <hr />
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.FirstName" class="col-form-label text-black-50"></label>
+                        <input type="text" class="form-control" asp-for="@Model.FirstName">
+                        <span class="text-danger" asp-validation-for="@Model.FirstName"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.LastName" class="col-form-label text-black-50"></label>
+                        <input type="text" class="form-control" asp-for="@Model.LastName">
+                        <span class="text-danger" asp-validation-for="@Model.LastName"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.MiddleName" class="col-form-label text-black-50"></label>
+                        <input type="text" class="form-control" asp-for="@Model.MiddleName">
+                        <span class="text-danger" asp-validation-for="@Model.MiddleName"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.Address" class="col-form-label text-black-50"></label>
+                        <input type="text" class="form-control" asp-for="@Model.Address">
+                        <span class="text-danger" asp-validation-for="@Model.Address"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.Quantity" class="col-form-label text-black-50"></label>
+                        <input type="text" class="form-control" asp-for="@Model.Quantity">
+                        <span class="text-danger" asp-validation-for="@Model.Quantity"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="col-form-label text-black-50">Цвет</label>
+                        <input type="color" class="form-control form-control-color" id="colorInputId" value="#563d7c" />
+                    </div>
+                </div>
+                <div class="float-right" style="padding: 0 15px 15px 0">
+                    <button class="btn btn-success" id="createOrderId">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <img src="https://img3.akspic.ru/previews/2/3/6/3632/3632-skuderiya_ferrari-gonki-krasnyj-krasnyj_cvet-splochenie-x750.jpg" height="300" width="300" class="card-img-top">
+            <div class="card-body">
+                <h5 class="card-title">Инструкция получения</h5>
+                <p class="card-text">Как проходит получение автомобиля:</p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">○ Делаете заказ</li>
+                <li class="list-group-item">○ Мы звоним и уточняем у вас информацию</li>
+                <li class="list-group-item">○ Вы приезжаете на место</li>
+            </ul>
+            <div class="card-body">
+                <a asp-controller="Home" asp-action="Index" class="card-link">Главная</a>
+                <a asp-controller="Car" asp-action="GetCars" class="card-link">Автомобили</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section pageScripts
+    {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js" integrity="sha512-xq+Vm8jC94ynOikewaQXMEkJIOBp7iArs3IhFWSWdRT3Pq8wFz46p+ZDFAR7kHnSFf+zUv52B3prRYnbDRdgog==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $.validator.unobtrusive.parse($("#orderFormId"));
+        $('#createOrderId').on('click', function (e) {
+            e.preventDefault();
+            const model = $('#orderFormId').serialize();
+            $.ajax({
+                url: '@Url.Action("CreateOrder")',
+                type: 'POST',
+                data: model,
+                success: function (response) {
+                    Swal.fire({
+                        title: 'Информация',
+                        text: response.description,
+                        icon: 'success',
+                        confirmButtonText: 'Окей'
+                    })
+                },
+                error: function (response) {
+                    Swal.fire({
+                        title: 'Информация',
+                        text: 'Ошибка валидации | Заполните все поля',
+                        icon: 'error',
+                        confirmButtonText: 'Окей'
+                    })
+                }
+            })
+        });
+    </script>
+}

@@ -5,7 +5,7 @@ namespace PracticeCSharp.Domain.Entity
 {
     public class Car
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Name { get; set; }
 
@@ -21,7 +21,7 @@ namespace PracticeCSharp.Domain.Entity
 
         public TypeCar TypeCar { get; set; }
 
-        public byte[]? Avatar { get; set; }
+        public string Avatar { get; set; }
 
     }
 }

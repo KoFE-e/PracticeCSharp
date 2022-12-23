@@ -7,11 +7,11 @@ namespace PracticeCSharp.Domain.ViewModels.Car
     public class CarViewModel
     {
         
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Display(Name = "Название")]
         [Required(ErrorMessage = "Введите имя")]
-        [MinLength(1, ErrorMessage = "Минимальная длина должна быть более одного символа")]
+        [MinLength(2, ErrorMessage = "Минимальная длина должна быть более одного символа")]
         public string Name { get; set; }
 
         [Display(Name = "Описание")]
@@ -44,6 +44,6 @@ namespace PracticeCSharp.Domain.ViewModels.Car
         [Display(Name = "Фото")]
         public IFormFile Avatar { get; set; }
 
-        public byte[]? Image { get; set; }
+        public string Image { get; set; }
     }
 }

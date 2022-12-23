@@ -9,7 +9,7 @@ namespace PracticeCSharp.Domain.ViewModels.Account
         [Required(ErrorMessage = "Введите пароль")]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
-        [MinLength(5, ErrorMessage = "Пароль должен быть больше или равен 5 символов")]
+        [MinLength(4, ErrorMessage = "Длина пароля должна быть более 3 символов")]
         public string NewPassword { get; set; }
     }
 }

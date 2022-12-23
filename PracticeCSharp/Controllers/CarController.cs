@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PracticeCSharp.DAL.Interfaces;
@@ -18,10 +19,12 @@ namespace PracticeCSharp.Controllers
     public class CarController : Controller
     {
         private readonly ICarService _carService;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public CarController(ICarService carService)
+        public CarController(ICarService carService, IWebHostEnvironment hostEnvironment)
         {
             _carService = carService;
+            this._hostEnvironment = hostEnvironment;
         }
 
         [HttpGet]
@@ -38,7 +41,7 @@ namespace PracticeCSharp.Controllers
         public IActionResult Compare() => PartialView();
 
         [HttpGet]
-        public async Task<ActionResult> GetCar(int id, bool isJson)
+        public async Task<ActionResult> GetCar(long id, bool isJson)
         {
             var response = await _carService.GetCar(id);
             if (isJson)
@@ -61,8 +64,21 @@ namespace PracticeCSharp.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
+            //delete image from files
+            var car = await _carService.GetCar(id);
+
+            if(car.Data.Image != null)
+            {
+                var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "img", car.Data.Image);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+            
+
             var response = await _carService.DeleteCar(id);
             if (response.StatusCode == Domain.Enum.StatusCode.OK)
             {
@@ -73,7 +89,7 @@ namespace PracticeCSharp.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Save(int id)
+        public async Task<IActionResult> Save(long id)
         {
             if (id == 0) 
             {
@@ -90,31 +106,41 @@ namespace PracticeCSharp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save([FromForm]CarViewModel car)
+        public async Task<IActionResult> Save(CarViewModel car)
         {
             ModelState.Remove("Image");
             ModelState.Remove("Id");
+
+            if (car.Avatar != null)
+            {
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                string filename = Path.GetFileNameWithoutExtension(car.Avatar.FileName);
+                string extension = Path.GetExtension(car.Avatar.FileName);
+                car.Image = filename = filename + '_' + DateTime.Now.ToString("ddMMyyhhmmss") + extension;
+                string path = Path.Combine(wwwRootPath + "/img/", filename);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await car.Avatar.CopyToAsync(fileStream);
+                }
+            }
             
             if (ModelState.IsValid)
             {
                 if (car.Id == 0)
                 {
-                    if (car.Avatar != null)
-                    {
-                        byte[] imageData;
-                        using (var binaryReader = new BinaryReader(car.Avatar.OpenReadStream()))
-                        {
-                            imageData = binaryReader.ReadBytes((int)car.Avatar.Length);
-                        }
-                        await _carService.Create(car, imageData);
-                    } 
-                    else
-                    {
-                        await _carService.Create(car, null);
-                    }
+                    await _carService.Create(car);
                 }
                 else
                 {
+                    var model = await _carService.GetCar(car.Id);
+                    if (model.Data.Image != null)
+                    {
+                        var imagePath = Path.Combine(_hostEnvironment.WebRootPath, "img", model.Data.Image);
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            System.IO.File.Delete(imagePath);
+                        }
+                    }
                     await _carService.Edit(car.Id, car);
                 }
 

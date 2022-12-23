@@ -6,6 +6,7 @@
         UserNotFound = 1,
         UserAlreadyExists = 2,
         OK = 200,
+        OrderNotFound = 300,
         InternalServerError = 500
     }
 }

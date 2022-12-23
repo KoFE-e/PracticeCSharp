@@ -18,11 +18,13 @@ namespace PracticeCSharp.Service.Implementations
     {
         private readonly IBaseRepository<Profile> _proFileRepository;
         private readonly IBaseRepository<User> _userRepository;
+        private readonly IBaseRepository<Basket> _basketRepository;
 
-        public AccountService(IBaseRepository<User> userRepository, IBaseRepository<Profile> proFileRepository)
+        public AccountService(IBaseRepository<User> userRepository, IBaseRepository<Profile> proFileRepository, IBaseRepository<Basket> basketRepository)
         {
             _userRepository = userRepository;
             _proFileRepository = proFileRepository;
+            _basketRepository = basketRepository;
         }
 
         public async Task<BaseResponse<ClaimsIdentity>> Register(RegisterViewModel model)
@@ -54,6 +56,14 @@ namespace PracticeCSharp.Service.Implementations
                 };
 
                 await _proFileRepository.Create(profile);
+
+                var basket = new Basket()
+                {
+                    UserId = user.Id,
+
+                };
+
+                await _basketRepository.Create(basket);
 
                 var result = Authentificate(user);
 

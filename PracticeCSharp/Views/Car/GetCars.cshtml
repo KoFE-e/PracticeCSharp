@@ -10,14 +10,13 @@
     var cardStyle = "col-md-12";
     if (Model != null)
     {
-        switch (Model.Count)
+        if (Model.Count < 3)
         {
-            case 2:
-                cardStyle = "col-md-6";
-                break;
-            case 3:
-                cardStyle = "col-md-4";
-                break;
+            cardStyle = "col-md-6";
+        }
+        else
+        {
+            cardStyle = "col-md-4";
         }
     }
 }
@@ -88,7 +87,10 @@ else
             <div class="row row-cols-1 @cardStyle text-center">
                 <div class="col" style="padding: 10px;">
                     <div class="card">
-                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(car?.Avatar ?? Array.Empty<byte>())" class="card-img-top card-image" alt="@car.Name">
+                        @if(car.Avatar != null)
+                        {
+                            <img src="@("~/img/"+car.Avatar)" asp-append-version="true" class="card-img-top card-image" alt="@car.Name">
+                        }
                         <div class="card-body">
                             <h5 class="card-title">Название: @car.Name</h5>
                             <p class="card-text">Краткое описание: @car.Description</p>
@@ -106,6 +108,7 @@ else
                             {
                                 <a asp-controller="Car" asp-action="Delete" asp-route-id="@car.Id" class="btn btn-danger">Удалить</a>
                             }
+                            <a asp-controller="Order" asp-action="CreateOrder" asp-route-id="@car.Id" class="btn btn-success">Добавить</a>
                         </div>
                     </div>
                 </div>
@@ -124,7 +127,9 @@ else
         $('#saveBtn').on('click', function () {
             if ($("#formSaveCar").valid()) {
                 var formData = new FormData();
-                var file = $('input#Avatar')[0].files;
+                var fileInput = $('#Avatar')[0];
+                var file = fileInput.files[0];
+                alert(file);
                 formData.append("Avatar", file);
                 formData.append("Id", $('input#Id').val());
                 formData.append("Name", $('input#Name').val());
@@ -134,6 +139,7 @@ else
                 formData.append("DateCreate", $('input#DateCreate').val());
                 formData.append("Description", $('textarea#Description').val());
                 formData.append("TypeCar", $('#carTypeId').val());
+                alert(JSON.stringify(file));
                 $.ajax({
                     url: '@Url.Action("Save")',
                     type: 'POST',

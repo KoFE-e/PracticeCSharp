@@ -11,7 +11,7 @@ namespace PracticeCSharp.Domain.Extensions
 
             for (int i = 0; i < words.Count; i++)
             {
-                sb.Append($"{i + 1}: {words[i]} ");
+                sb.Append($"{i + 1}: {words[i]}\n");
             }
 
             return sb.ToString();

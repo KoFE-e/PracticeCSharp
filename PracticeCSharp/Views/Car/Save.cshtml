@@ -1,7 +1,7 @@
 ﻿@model PracticeCSharp.Domain.ViewModels.Car.CarViewModel
 
 @{
-    var textTitle = Model?.Id == 0 ? "Изменение данных" : "Добавление данных";
+    var textTitle = Model?.Id == 0 ? "Добавление машины" : "Изменение машины";
 }
 
 <style>
@@ -54,9 +54,9 @@
         </div>
     </div>
     <div class="row">
-        <div class="form-group col-md-12">
+        <div class="form-group col-md-4">
             <label asp-for="@Model.Avatar" class="col-form-label"></label>
-            <input asp-for="@Model.Avatar" class="form-control" type="file">
+            <input asp-for="@Model.Avatar" accept="image/*">
         </div>
     </div>
 </form>

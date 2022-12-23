@@ -11,8 +11,8 @@ namespace PracticeCSharp.Domain.ViewModels.Profile
         public byte Age { get; set; }
 
         [Required(ErrorMessage = "Укажите адрес")]
-        [MinLength(5, ErrorMessage = "Минимальная длина должна быть больше 5 символов")]
-        [MaxLength(200, ErrorMessage = "Максимальная длина должна быть меньше 200 символов")]
+        [MinLength(5, ErrorMessage = "Минимальная длина должна быть равна 5 символов")]
+        [MaxLength(200, ErrorMessage = "Максимальная длина должна быть менее 200 символов")]
         public string Address { get; set; }
 
         public string UserName { get; set; }

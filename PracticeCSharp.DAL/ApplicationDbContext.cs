@@ -19,6 +19,10 @@ namespace PracticeCSharp.DAL
 
         public DbSet<Profile> Profile { get; set; }
 
+        public DbSet<Basket> Basket { get; set; }
+
+        public DbSet<Order> Order { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>(builder =>
@@ -28,7 +32,7 @@ namespace PracticeCSharp.DAL
                 builder.HasData(new User
                 {
                     Id = 1,
-                    Name = "FirstAdmin",
+                    Name = "admin",
                     Password = HashPasswordHelper.HashPassword("1234"),
                     Role = Role.Admin
                 });
@@ -44,6 +48,11 @@ namespace PracticeCSharp.DAL
                     .WithOne(x => x.User)
                     .HasPrincipalKey<User>(x => x.Id)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasOne(x => x.Basket)
+                    .WithOne(x => x.User)
+                    .HasPrincipalKey<User>(x => x.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Car>(builder =>
@@ -54,12 +63,13 @@ namespace PracticeCSharp.DAL
                 {
                     Id = 1,
                     Name = "BMW X5",
-                    Description = "Best car",
+                    Description = "Best car ever",
+                    Price = 10,
                     DateCreate = DateTime.Now,
                     Speed = 230,
                     Model = "BMW",
-                    Avatar = null,
-                    TypeCar = TypeCar.PassengerCar
+                    TypeCar = TypeCar.PassengerCar,
+                    Avatar = "Mustang.jpg"
                 });
             });
 
@@ -76,6 +86,24 @@ namespace PracticeCSharp.DAL
                     Id = 1,
                     UserId = 1
                 });
+            });
+
+            modelBuilder.Entity<Basket>(builder => {
+                builder.ToTable("Basket").HasKey(x => x.Id);
+
+                builder.HasData(new Basket()
+                {
+                    Id = 1,
+                    UserId = 1
+                });
+            });
+
+            modelBuilder.Entity<Order>(builder => {
+                builder.ToTable("Order").HasKey(x => x.Id);
+
+                builder.HasOne(r => r.Basket).WithMany(t => t.Orders)
+                    .HasForeignKey(r => r.BasketId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
